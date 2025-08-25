@@ -355,7 +355,7 @@ SCOREBOARD_LAGS_DIFFS <-
 # Diff_MSEU = deviations of timediff from avg(timediff)
 
 populationStandardDeviation <- function(x)
-  sqrt(mean( (x - mean(x))^2 ))
+  sqrt(mean( (x - mean(x, na.rm=TRUE))^2 , na.rm=TRUE))
 
 message('Calculating scores...')
 SCOREBOARD_SCORES <-
@@ -387,7 +387,7 @@ SCOREBOARD_SCORES <-
   #   , by=.(INDIC_NUM, variable)] %>% 
   .[, reference := mean(value[geo %in% EU_Members_geo_codes], na.rm=TRUE),
     , by=.(INDIC_NUM, variable)] %>% 
-  .[, std := populationStandardDeviation(value[geo %in% EU_Members_geo_codes], na.rm=TRUE),
+  .[, std := populationStandardDeviation(value[geo %in% EU_Members_geo_codes]),
     , by=.(INDIC_NUM, variable)] %>% 
   .[, score := 
       -ifelse(high_is_good,1,-1)*
