@@ -20,7 +20,6 @@ if (interactive() && exists("SCOREBOARD_INDICATORS"))
   } else init()
 
 # Order matters:
-# preCheckInidcators('Scoreboard_indicators__definitions.R')
 runScript('Scoreboard_indicators__definitions.R')
 runScript('Scoreboard_output.R')
 runScript('Scoreboard_runs_compared.R')
