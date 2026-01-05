@@ -379,11 +379,15 @@ SCOREBOARD_LAGS_DIFFS <-
   .[, change := 
       ifelse(!change_in_percent, latest_value - previous_value,
              100*(latest_value/previous_value - 1))] %>% 
-  .[, Diff_EU := latest_value - mean(latest_value[geo %in% EU_Members_geo_codes],
-                                     na.rm=TRUE)
+  .[, Mean_latest_value := mean(latest_value[geo %in% EU_Members_geo_codes],
+                                na.rm=TRUE)
+    , by=.(INDIC_NUM,time)] %>% 
+  .[, Mean_change := mean(change[geo %in% EU_Members_geo_codes],
+                                   na.rm=TRUE)
+    , by=.(INDIC_NUM,time)] %>% 
+  .[, Diff_EU := latest_value - Mean_latest_value
     , by=.(INDIC_NUM)] %>% 
-  .[, Diff_MSEU := change - mean(change[geo %in% EU_Members_geo_codes],
-                                 na.rm=TRUE)
+  .[, Diff_MSEU := change - Mean_change
     , by=.(INDIC_NUM)]
 
 # Diff_EU = deviations of latest level from avg(latest level)
