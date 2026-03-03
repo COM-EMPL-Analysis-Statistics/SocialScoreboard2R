@@ -274,6 +274,40 @@ SCOREBOARD_GRAND_TABLE <-
                 grep('^.$',colnames(.),value=TRUE),
                 grep('^flags_.$',colnames(.),value=TRUE)))
 
+### UNFINISHED:
+# relax__MIN_NUMBER_OF_COUNTRIES__requirement <- function(dt, min_number_of_countries) {
+#   dt. <-
+#     dt[,.(sufficiently_many_countries = unique(sufficiently_many_countries))
+#        ,by=.(INDIC_NUM)]
+#     unique(dt$INDIC_NUM) %>% 
+#     lapply(function(indic_num)
+#     if (dt.[INDIC_NUM==indic_num,sufficiently_many_countries] %>% is.na %>% all) {
+#       message('****** Relaxing MIN_NUMBER_OF_COUNTRIES for ',indic_num,' to ',min_number_of_countries-1,' ******')
+#       dt %>%
+#         .[INDIC_NUM==indic_num] %>% 
+#       .[, sufficiently_many_countries :=
+#           value_[geo %in% EU_Members_geo_codes] %>%
+#           {length(.)>=min_number_of_countries-1}
+#         , by=.(INDIC_NUM,time)]
+#     } else dt) %>% 
+#     relax__MIN_NUMBER_OF_COUNTRIES__requirement(min_number_of_countries-1)
+# }
+
+checkIf__MIN_NUMBER_OF_COUNTRIES__notSatisfiedForAllYears <- function(dt) {
+  problematic_dt <-
+    dt %>% 
+    .[,.(latest_year_overall = unique(latest_year_overall))
+      , by=INDIC_NUM] %>% # across time
+    .[, num_of_obs := .N
+      , by=INDIC_NUM] %>% 
+    .[is.na(latest_year_overall) & num_of_obs==1]
+  if (nrow(problematic_dt)>0)
+    stop('MIN_NUMBER_OF_COUNTRIES=',MIN_NUMBER_OF_COUNTRIES,
+         ' is never satisfied (for any of the years)\nfor INDIC_NUM = ',
+         paste(sort(problematic_dt$INDIC_NUM), collapse=', ')) else dt
+}
+
+
 message('Calculating lags...')
 SCOREBOARD_LAGS_DIFFS <-
   SCOREBOARD_GRAND_TABLE %>%
@@ -295,6 +329,7 @@ SCOREBOARD_LAGS_DIFFS <-
       suppressWarnings(max(time[sufficiently_many_countries])) %>% # suppressed warning if time[sufficiently_many_countries] is empty i.e. -> max = -Inf
       ifelse(is.infinite(.), NA_integer_, .)
     , by=INDIC_NUM] %>%
+  checkIf__MIN_NUMBER_OF_COUNTRIES__notSatisfiedForAllYears %>% 
   # merge( # needed for correct shifts
   #   expand.grid(INDIC_NUM=unique(.$INDIC_NUM)
   #                 %without% ### EXCEPTIONS to the normal 1-year difference !!!
@@ -325,11 +360,11 @@ SCOREBOARD_LAGS_DIFFS <-
     , by=.(INDIC_NUM,geo)] %>% 
   .[time <= latest_year_individual] %>% 
   .[, prevailing_latest_year := latest_year_overall
-      # round(mean(latest_year_individual))
-      # max(latest_year_individual)
-    , by=INDIC_NUM] %>% 
+    # round(mean(latest_year_individual))
+    # max(latest_year_individual)
+    , by=INDIC_NUM] %>% ############## {View(.[INDIC_NUM %in% c('10610_ex61','10500_ex50')])}
   # .[time <= prevailing_latest_year] %>% 
-  .[prevailing_latest_year %>% isNotNA(.)] %>% 
+  .[prevailing_latest_year %>% isNotNA(.)] %>%  ########## {str(.[INDIC_NUM=='10610_ex61'])}  ### PROBLEM for 10610_ex61 -- zero observations
   setorder(INDIC_NUM,geo,time) %>% 
   .[, previous_year := time[time<prevailing_latest_year] %>% max(na.rm=TRUE)
     , by=.(INDIC_NUM)] %>% 
@@ -344,11 +379,15 @@ SCOREBOARD_LAGS_DIFFS <-
   .[, change := 
       ifelse(!change_in_percent, latest_value - previous_value,
              100*(latest_value/previous_value - 1))] %>% 
-  .[, Diff_EU := latest_value - mean(latest_value[geo %in% EU_Members_geo_codes],
-                                     na.rm=TRUE)
+  .[, Mean_latest_value := mean(latest_value[geo %in% EU_Members_geo_codes],
+                                na.rm=TRUE)
+    , by=.(INDIC_NUM,time)] %>% 
+  .[, Mean_change := mean(change[geo %in% EU_Members_geo_codes],
+                                   na.rm=TRUE)
+    , by=.(INDIC_NUM,time)] %>% 
+  .[, Diff_EU := latest_value - Mean_latest_value
     , by=.(INDIC_NUM)] %>% 
-  .[, Diff_MSEU := change - mean(change[geo %in% EU_Members_geo_codes],
-                                 na.rm=TRUE)
+  .[, Diff_MSEU := change - Mean_change
     , by=.(INDIC_NUM)]
 
 # Diff_EU = deviations of latest level from avg(latest level)

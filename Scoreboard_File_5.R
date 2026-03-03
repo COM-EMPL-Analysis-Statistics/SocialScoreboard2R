@@ -78,11 +78,11 @@ scoresForTminus <- function(N) {
         ifelse(N==2 & INDIC_NUM=='10040_ex4', # Share of individuals who have basic or above basic overall digital skills
                max(time[time<. & INDIC_NUM=='10040_ex4']),
                .)]  %>% 
-    .[, prevailing_latest_year :=  
-        ifelse(INDIC_NUM=='10610_ex61' &  # GDHI
-                 prevailing_latest_year <= as.integer(CycleYear) - 4L,
-               prevailing_latest_year + 1,
-               prevailing_latest_year)] %>% 
+    # .[, prevailing_latest_year :=  
+    #     ifelse(INDIC_NUM=='10610_ex61' &  # GDHI
+    #              prevailing_latest_year <= as.integer(CycleYear) - 4L,
+    #            prevailing_latest_year + 1,
+    #            prevailing_latest_year)] %>% 
     # .[time <= prevailing_latest_year] %>% 
     .[prevailing_latest_year %>% isNotNA(.)] %>% 
     setorder(INDIC_NUM,geo,time) %>% 
@@ -116,10 +116,10 @@ scoresForTminus <- function(N) {
          na.rm=TRUE) %>% 
     .[, reference := mean(value[geo %in% EU_Members_geo_codes], na.rm=TRUE),
       , by=.(INDIC_NUM, variable)] %>% 
-    .[, std := sd(value[geo %in% EU_Members_geo_codes], na.rm=TRUE),
+    .[, std := populationStandardDeviation(value[geo %in% EU_Members_geo_codes]),
       , by=.(INDIC_NUM, variable)] %>% 
-    .[, score := -1.019049* # rescaling to make it compatible with the Python results
-        ifelse(high_is_good,1,-1)*
+    .[, score := 
+        -ifelse(high_is_good,1,-1)*
         (value - reference)/std] %>% 
     .[, t1 := reference - std] %>% 
     .[, t2 := reference - std/2] %>% 
