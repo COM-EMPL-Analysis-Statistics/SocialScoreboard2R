@@ -98,6 +98,22 @@ checkFlags <- function(dt, flag)
          init = logical(nrow(dt)),
          f = function(i,x) i | grepl(flag,x))
 
+largestChanges <- function(dt)
+  copy(dt) %>% 
+  .[, max_time := max(time)
+    , by=.(INDIC_NUM,geo)] %>% 
+  .[, .(latest_diff = value_[time==max_time] - value_[time==max_time-1])
+    , by=.(INDIC_NUM, geo)] %>% 
+  .[isNotNA(latest_diff)] %>% 
+  .[, bottom_3_lowest := frank(latest_diff, ties.method='dense')<=3
+    , by=INDIC_NUM] %>% 
+  .[, top_3_highest := frank(-latest_diff, ties.method='dense')<=3
+    , by=INDIC_NUM] %>% 
+  setnames(c('bottom_3_lowest','top_3_highest'),
+           c('Latest change among the 3 lowest across countries',
+             'Latest change among the 3 highest across countries')) %>% 
+  .[, latest_diff := NULL]
+
 MIN_NUMBER_OF_COUNTRIES <- 24
 
 CURRENT_YEAR <-
@@ -110,6 +126,9 @@ inRange <- function(x,bottom,top)
 
 QUALITY_CHECKS_FUNCTIONS <-
   list(
+    \(dt) dt[, `Break in time series (flag 'b')` := checkFlags(dt,'b')],
+    \(dt) dt[, `Unreliable (flag 'u')` := checkFlags(dt,'u')],
+    \(dt) dt[, `Not significant (flag 'n')` := checkFlags(dt,'n')],
     \(dt) dt[, paste0('Latest year considered (for which the number of available Member States ≥ ',
                       MIN_NUMBER_OF_COUNTRIES,')') := max(time)
              , by=INDIC_NUM],
@@ -148,9 +167,7 @@ QUALITY_CHECKS_FUNCTIONS <-
     \(dt) dt[, c('Volatility of time series (the higher, the more volatile)','Is an outlier') :=
                volatility(time, value_)
              , by=.(INDIC_NUM,geo)],
-    \(dt) dt[, `Break in time series (flag 'b')` := checkFlags(dt,'b')],
-    \(dt) dt[, `Unreliable (flag 'u')` := checkFlags(dt,'u')],
-    \(dt) dt[, `Not significant (flag 'n')` := checkFlags(dt,'n')]
+    \(dt) merge(dt, largestChanges(dt), by=c('INDIC_NUM','geo'), all.x=TRUE) 
   )
 
 qualityChecksTable <- function(SCOREBOARD_GRAND_TABLE)
@@ -494,18 +511,22 @@ SCOREBOARD_SCORES <-
 
 createFolder(OUTPUT_FOLDER)
 
-# message('\nGenerating `Quality Checks.xlsx`...')
-# QCT <- qualityChecksTable(SCOREBOARD_GRAND_TABLE)
-# wb_workbook() %>% 
-#   wb_add_worksheet("Scoreboard quality checks", zoom=75) %>%
-#   wb_add_data(x=QCT) %>% 
-#   wb_add_font(dims=paste0('A1:',int2col(ncol(QCT)),'1'), bold="bold") %>% 
-#   wb_add_cell_style(dims=paste0('A1:',int2col(ncol(QCT)),'1'), wrap_text=TRUE) %>% 
-#   wb_set_col_widths(cols=1:ncol(QCT), widths=12) %>%
-#   wb_set_row_heights(rows=1, heights=107) %>% 
-#   wb_freeze_pane(first_row=TRUE) %>% 
-#   wb_add_filter(rows=1, cols=1:ncol(QCT)) %>% 
-#   wb_save(paste0(OUTPUT_FOLDER,'/Quality Checks.xlsx'))
+message('\nGenerating `Quality Checks.xlsx`...')
+QCT_function <- function() {
+  QCT <- qualityChecksTable(SCOREBOARD_GRAND_TABLE)
+  wb_workbook() %>%
+    wb_add_worksheet("Scoreboard quality checks", zoom=75) %>%
+    wb_add_data(x=QCT) %>%
+    wb_add_font(dims=paste0('A1:',int2col(ncol(QCT)),'1'), bold="bold") %>%
+    wb_add_cell_style(dims=paste0('A1:',int2col(ncol(QCT)),'1'), wrap_text=TRUE) %>%
+    wb_set_col_widths(cols=1:ncol(QCT), widths=12) %>%
+    wb_set_row_heights(rows=1, heights=107) %>%
+    wb_freeze_pane(first_row=TRUE) %>%
+    wb_add_filter(rows=1, cols=1:ncol(QCT)) %>%
+    wb_save(paste0(OUTPUT_FOLDER,'/Quality Checks.xlsx'))
+}
+tryCatch(QCT_function(),  # may crash on the first run due to a cryptic problem in openxlsx2
+         error=\(e) {message('rerunning...'); QCT_function()})
 
 # message('\nPreparing the data.Rds file for the Shiny/Shinylive app...')
 # if (!dir.exists('../JAF2R_shinylive')) createFolder('../JAF2R_shinylive')
