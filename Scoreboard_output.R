@@ -185,7 +185,9 @@ qualityChecksTable <- function(SCOREBOARD_GRAND_TABLE)
   ) %>% 
   .[, c('INDIC_NUM','geo','time','value_',
         colnames(.) %without% colnames(SCOREBOARD_GRAND_TABLE))
-    , with=FALSE]
+    , with=FALSE] %>% 
+  merge(SCOREBOARD_NAMES_DESCRIPTIONS[,.(INDIC_NUM,name)],
+        by='INDIC_NUM')
 
 areRegularAnnualTimePoints <- function(uniq_years)
   sort(uniq_years) %>% 
@@ -517,7 +519,7 @@ QCT_function <- function() {
   wb_workbook() %>%
     wb_add_worksheet("Scoreboard quality checks", zoom=75) %>%
     wb_add_data(x=QCT) %>%
-    wb_add_font(dims=paste0('A1:',int2col(ncol(QCT)),'1'), bold="bold") %>%
+    wb_add_font(dims=paste0('A1:',int2col(ncol(QCT)),'1'), bold=TRUE) %>%
     wb_add_cell_style(dims=paste0('A1:',int2col(ncol(QCT)),'1'), wrap_text=TRUE) %>%
     wb_set_col_widths(cols=1:ncol(QCT), widths=12) %>%
     wb_set_row_heights(rows=1, heights=107) %>%
