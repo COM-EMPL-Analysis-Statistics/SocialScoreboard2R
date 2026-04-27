@@ -22,7 +22,14 @@ timeNstepsSmaller <- function(time., n.) {
     max()
 }
 
-
+`Data Years for Social Scoreboard file 5 database` <-
+  'Data Years for Social Scoreboard file 5 database.xlsx' %>% 
+  read_xlsx %>% 
+  as.data.table %T>% 
+  {stopifnot(
+    'In "Data Years for Social Scoreboard file 5 database.xlsx"\nrows must be uniquely identified by `JER Year`,`INDIC_NUM`,`Data Year`'=
+      anyDuplicated(.[,.(`JER Year`,`INDIC_NUM`,`Data Year`)])==0
+  )}
 
 irregular_indics <-
   SCOREBOARD_NAMES_DESCRIPTIONS %>% 
@@ -43,12 +50,7 @@ scoresForTminus <- function(N) {
   message('Calculating lags for N=',N,'...')
   SCOREBOARD_LAGS_DIFFS. <-
     SCOREBOARD_GRAND_TABLE %>%
-    .[, .(INDIC_NUM,geo,time,high_is_good,change_in_percent,value_,flags_)] %T>% 
-    {if (nrow(.)!=nrow(unique(.[,.(INDIC_NUM,geo,time)]))) {
-      View(.[duplicated(.[,.(INDIC_NUM,geo,time)])])
-      stop('\n`INDIC_NUM`, `geo`, `time` do not uniquely identify the rows in `SCOREBOARD_GRAND_TABLE`!\n',
-           'The offending rows are shown in data viewer.')
-    }} %>%
+    .[, .(INDIC_NUM,geo,time,high_is_good,change_in_percent,value_,flags_)] %>%
     .[, time := as.integer(time)] %>% 
     .[, value_ := as.numeric(value_)] %>% 
     .[isNotNA(value_)] %>% 
@@ -57,34 +59,12 @@ scoresForTminus <- function(N) {
         value_[geo %in% EU_Members_geo_codes] %>%
         {length(.)>=MIN_NUMBER_OF_COUNTRIES}
       , by=.(INDIC_NUM,time)] %>%
-    .[, latest_year_overall :=
-        suppressWarnings(max(time[sufficiently_many_countries])) %>% # suppressed warning if time[sufficiently_many_countries] is empty i.e. -> max = -Inf
-        ifelse(is.infinite(.), NA_integer_, .)
-      , by=INDIC_NUM] %>%
-    .[, latest_year_individual :=
-        time %>% 
-        .[isNotNA(.) & isNotNA(value_)] %>% 
-        max()
-      , by=.(INDIC_NUM,geo)] %>% 
-    .[time <= latest_year_individual] %>% 
-    .[, prevailing_latest_year := latest_year_overall
-      - ifelse(INDIC_NUM %not in% irregular_indics, N, 0L)   # here N is used ❗❗❗ ❗❗❗ ❗❗❗
-      , by=INDIC_NUM] %>%
-    # .[, prevailing_latest_year := time[time<=latest_year_overall] %>% 
-    #     timeNstepsSmaller(t,N)   # here N is used ❗❗❗ ❗❗❗ ❗❗❗
-    #   , by=INDIC_NUM] %>% 
-    # ❗❗❗ Irregular exception ❗❗❗:
-    .[, prevailing_latest_year := prevailing_latest_year %>% 
-        ifelse(N==2 & INDIC_NUM=='10040_ex4', # Share of individuals who have basic or above basic overall digital skills
-               max(time[time<. & INDIC_NUM=='10040_ex4']),
-               .)]  %>% 
-    # .[, prevailing_latest_year :=  
-    #     ifelse(INDIC_NUM=='10610_ex61' &  # GDHI
-    #              prevailing_latest_year <= as.integer(CycleYear) - 4L,
-    #            prevailing_latest_year + 1,
-    #            prevailing_latest_year)] %>% 
-    # .[time <= prevailing_latest_year] %>% 
-    .[prevailing_latest_year %>% isNotNA(.)] %>% 
+    merge(`Data Years for Social Scoreboard file 5 database` %>% 
+            .[,.(`JER Year`,`INDIC_NUM`,`Data Year`)],
+          by="INDIC_NUM") %>% 
+    .[`JER Year`==max(`JER Year`) - N] %>%  # here N is used ❗❗❗ ❗❗❗ ❗❗❗
+    .[time <= `Data Year`] %>% 
+    .[, prevailing_latest_year := `Data Year`] %>%
     setorder(INDIC_NUM,geo,time) %>% 
     .[, previous_year := time[time<prevailing_latest_year] %>% max(na.rm=TRUE)
       , by=.(INDIC_NUM)] %>% 
@@ -232,11 +212,6 @@ ExcelRowsAndCols <-
 
 
 HistoricalFile5 <-
-  # list.files(path='O:/European Semester – Coordination/02 Horizontal issues/02 Analytical tools/Social Scoreboard',
-  #            pattern="file ?5.*\\.xlsx$",
-  #            full.names=TRUE) %>% 
-  # grep('^(?!.*\\/~).*', ., perl=TRUE, value=TRUE) %T>% # ignoring those with /~ (hidden temp files)
-  # {stopifnot('None or more than 1 historical File 5 found!' = length(.)==1)} %>% 
   'Social Scoreboard file5 TEMPLATE.xlsx' %>% 
   wb_load()
 
