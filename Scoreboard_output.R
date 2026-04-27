@@ -132,6 +132,10 @@ QUALITY_CHECKS_FUNCTIONS <-
     \(dt) dt[, paste0('Latest year considered (for which the number of available Member States ≥ ',
                       MIN_NUMBER_OF_COUNTRIES,')') := max(time)
              , by=INDIC_NUM],
+    \(dt) dt[, max_time := max(time), by=.(INDIC_NUM,geo)] %>% 
+      .[, `Latest year available for this country and indicator is < latest year for other countries` :=
+          max_time<max(time), by=INDIC_NUM] %>% 
+      .[, max_time := NULL],
     \(dt) dt[, `Old data` := max(time) < CURRENT_YEAR - 3
              , by=.(INDIC_NUM,geo)],
     \(dt) dt[, `Very old data` := max(time) < CURRENT_YEAR - 5
@@ -402,7 +406,7 @@ SCOREBOARD_LAGS_DIFFS <-
                                 na.rm=TRUE)
     , by=.(INDIC_NUM,time)] %>% 
   .[, Mean_change := mean(change[geo %in% EU_Members_geo_codes],
-                                   na.rm=TRUE)
+                          na.rm=TRUE)
     , by=.(INDIC_NUM,time)] %>% 
   .[, Diff_EU := latest_value - Mean_latest_value
     , by=.(INDIC_NUM)] %>% 
