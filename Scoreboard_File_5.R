@@ -1,15 +1,15 @@
 library(openxlsx2)
 library(kit)
 
-# Determine "cycle year" based on a May–April cycle
-CycleYear <- local({
-  date <- Sys.Date()
-  # Extract numeric year and month from the date
-  yr <- as.integer(format(date, "%Y"))
-  mo <- as.integer(format(date, "%m"))
-  # If month is April (4) or later, add 1 to the year
-  if (mo >= 4) yr + 1  else yr
-}) %>% as.character
+# # Determine "cycle year" based on a May–April cycle
+# CycleYear <- local({
+#   date <- Sys.Date()
+#   # Extract numeric year and month from the date
+#   yr <- as.integer(format(date, "%Y"))
+#   mo <- as.integer(format(date, "%m"))
+#   # If month is April (4) or later, add 1 to the year
+#   if (mo >= 4) yr + 1  else yr
+# }) %>% as.character
 
 timeNstepsSmaller <- function(time., n.) {
   stopifnot(length(n.)==1,
@@ -30,6 +30,12 @@ timeNstepsSmaller <- function(time., n.) {
     'In "Data Years for Social Scoreboard file 5 database.xlsx"\nrows must be uniquely identified by `JER Year`,`INDIC_NUM`,`Data Year`'=
       anyDuplicated(.[,.(`JER Year`,`INDIC_NUM`,`Data Year`)])==0
   )}
+
+CycleYear <-
+  `Data Years for Social Scoreboard file 5 database` %>% 
+  .$`JER Year` %>% 
+  max %>% 
+  as.character
 
 irregular_indics <-
   SCOREBOARD_NAMES_DESCRIPTIONS %>% 
@@ -110,12 +116,12 @@ scoresForTminus <- function(N) {
           fun.aggregate=identity,
           fill=NA) %>% 
     # ❗❗❗ Irregular exception ❗❗❗: Ignore changes, only use old levels
-    `if`(N==2,
-         .[, score_change := score_change %>% 
-             ifelse(INDIC_NUM=='10040_ex4',0L,.)] %>% # Share of individuals who have basic or above basic overall digital skills
-           .[, value_change := value_change %>% 
-               ifelse(INDIC_NUM=='10040_ex4',0,.)],
-         .) %>% 
+    # `if`(N==2,
+    #      .[, score_change := score_change %>% 
+    #          ifelse(INDIC_NUM=='10040_ex4',0L,.)] %>% # Share of individuals who have basic or above basic overall digital skills
+    #        .[, value_change := value_change %>% 
+    #            ifelse(INDIC_NUM=='10040_ex4',0,.)],
+    #      .) %>% 
     .[, colour_group :=
         kit::nif(
           # from Python's getException():
@@ -142,11 +148,11 @@ scoresForTminus <- function(N) {
           score_latest_value<=-1 & score_change<=1, 'darkgreen',
           score_latest_value %>% inRange(-0.5,0.5) & score_change %>% inRange(-1,1), 'white'
         )] %>% 
-    # ❗❗❗ Irregular exception ❗❗❗: ignore indicator 
-    `if`(N==2,
-         .[, colour_group := colour_group %>% 
-             ifelse(INDIC_NUM=='10000_ex0',NA_character_,.)], # Adult participation in learning 
-         .) %>% 
+    # # ❗❗❗ Irregular exception ❗❗❗: ignore indicator 
+    # `if`(N==2,
+    #      .[, colour_group := colour_group %>% 
+    #          ifelse(INDIC_NUM=='10000_ex0',NA_character_,.)], # Adult participation in learning 
+    #      .) %>% 
     setnames('score_latest_value','score1_L') %>% 
     setnames('score_change','score2_D') %>% 
     setorder(INDIC_NUM,geo,time)
@@ -160,7 +166,7 @@ fillInIrregularIndics <- function(SCOREBOARD_SCORES_dt)
 
 SCOREBOARD_SCORES_list <-
   list('2'=scoresForTminus(2),
-       '1'=scoresForTminus(1) %>% fillInIrregularIndics,
+       '1'=scoresForTminus(1), # %>% fillInIrregularIndics,
        '0'=SCOREBOARD_SCORES)
 
 SCOREBOARD_SCORES_list_copy <-
