@@ -6,8 +6,8 @@ chapter = "Education, skills and life long learning",
 group = "Equal opportunities",
 type = "B",
 high_is_good = TRUE,
-value = fromSpecialCalculation("Participation_in_education_and_training", 
-    with_filters(group="MEN"))
+value = fromEurostatDataset("trng_aes_100",
+    with_filters(age="Y25-64", sex="M", training="FE_NFE"))
 )
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09510_ex-49") = 
@@ -17,8 +17,8 @@ chapter = "Education, skills and life long learning",
 group = "Equal opportunities",
 type = "B",
 high_is_good = TRUE,
-value = fromSpecialCalculation("Participation_in_education_and_training", 
-    with_filters(group="WOMEN"))
+value = fromEurostatDataset("trng_aes_100",
+    with_filters(age="Y25-64", sex="F", training="FE_NFE"))
 )
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09520_ex-48") = 
@@ -28,8 +28,8 @@ chapter = "Education, skills and life long learning",
 group = "Equal opportunities",
 type = "B",
 high_is_good = TRUE,
-value = fromSpecialCalculation("Participation_in_education_and_training", 
-    with_filters(group="Y25-34"))
+value = fromEurostatDataset("trng_aes_101",
+    with_filters(age="Y25-34", sex="T", training="FE_NFE"))
 )
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09530_ex-47") = 
@@ -39,8 +39,8 @@ chapter = "Education, skills and life long learning",
 group = "Equal opportunities",
 type = "B",
 high_is_good = TRUE,
-value = fromSpecialCalculation("Participation_in_education_and_training", 
-    with_filters(group="Y35-44"))
+value = fromEurostatDataset("trng_aes_101",
+    with_filters(age="Y35-44", sex="T", training="FE_NFE"))
 )
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09540_ex-46") = 
@@ -50,8 +50,8 @@ chapter = "Education, skills and life long learning",
 group = "Equal opportunities",
 type = "B",
 high_is_good = TRUE,
-value = fromSpecialCalculation("Participation_in_education_and_training", 
-    with_filters(group="Y45-54"))
+value = fromEurostatDataset("trng_aes_101",
+    with_filters(age="Y45-54", sex="T", training="FE_NFE"))
 )
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09550_ex-45") = 
@@ -72,8 +72,8 @@ chapter = "Education, skills and life long learning",
 group = "Equal opportunities",
 type = "B",
 high_is_good = TRUE,
-value = fromSpecialCalculation("Participation_in_education_and_training", 
-    with_filters(group="ISCED_0-2"))
+value = fromEurostatDataset("trng_aes_102",
+    with_filters(isced11="ED0-2", age="Y25-64", sex="T", training="FE_NFE"))
 )
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09570_ex-43") = 
@@ -83,8 +83,8 @@ chapter = "Education, skills and life long learning",
 group = "Equal opportunities",
 type = "B",
 high_is_good = TRUE,
-value = fromSpecialCalculation("Participation_in_education_and_training", 
-    with_filters(group="ISCED_3-4"))
+value = fromEurostatDataset("trng_aes_102",
+    with_filters(isced11="ED3_4", age="Y25-64", sex="T", training="FE_NFE"))
 )
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09580_ex-42") = 
@@ -94,8 +94,8 @@ chapter = "Education, skills and life long learning",
 group = "Equal opportunities",
 type = "B",
 high_is_good = TRUE,
-value = fromSpecialCalculation("Participation_in_education_and_training", 
-    with_filters(group="ISCED_5-8"))
+value = fromEurostatDataset("trng_aes_102",
+    with_filters(isced11="ED5-8", age="Y25-64", sex="T", training="FE_NFE"))
 )
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "10000_ex0") = 
@@ -104,10 +104,10 @@ name = "Adult participation in learning (during the last 12 months, excl. guided
 chapter = "Education, skills and life long learning",
 group = "Equal opportunities",
 type = "H",
-url = "https://circabc.europa.eu/ui/group/d14c857a-601d-438a-b878-4b4cebd0e10f/library/c5a8b987-1e37-44d7-a20e-2c50d6101d27/details",
+url = "https://ec.europa.eu/eurostat/databrowser/bookmark/6c3b70a6-5012-45d3-87da-5720c2973926",
 high_is_good = TRUE,
-value = fromSpecialCalculation("Participation_in_education_and_training", 
-    with_filters(group="TOTAL"))
+value = fromEurostatDataset("trng_aes_100",
+    with_filters(age="Y25-64", sex="T", training="FE_NFE"))
 )
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "10010_ex1") = 
@@ -1299,7 +1299,7 @@ group = "Social protection and inclusion",
 type = "B",
 high_is_good = FALSE,
 value = fromEurostatDataset("ilc_lvho07a", 
-    with_filters(age="TOTAL", sex="M", unit="PC", incgrp="TOTAL"))
+    with_filters(age="TOTAL", sex="M", unit="PC", rskpovth="TOTAL"))
 )
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "11110_ex111") = 
@@ -1310,7 +1310,7 @@ group = "Social protection and inclusion",
 type = "B",
 high_is_good = FALSE,
 value = fromEurostatDataset("ilc_lvho07a", 
-    with_filters(age="TOTAL", sex="F", unit="PC", incgrp="TOTAL"))
+    with_filters(age="TOTAL", sex="F", unit="PC", rskpovth="TOTAL"))
 )
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "11120_ex112") = 
@@ -1378,7 +1378,7 @@ group = "Social protection and inclusion",
 type = "B",
 high_is_good = FALSE,
 value = fromEurostatDataset("hlth_dh030", 
-    with_filters(age="Y_GE16", lev_limit="SM_SEV", sex="T", unit="PC", reason="TOOEFW"))
+    with_filters(age="Y_GE16", lev_limit="SM_SEV", sex="T", unit="PC", reason="TXP_TFAR_WLIST"))
 )
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "11180_ex118") = 
