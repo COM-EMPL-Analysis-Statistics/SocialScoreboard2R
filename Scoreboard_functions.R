@@ -22,9 +22,9 @@ EU_Members_geo_codes <-
              all(. %in% eurodata::importLabels('geo')$geo))}
 
 EA_Members_geo_codes <-
-  c("BE","DE","EE","IE","EL","ES","FR","HR","IT","CY",
+  c("BE","BG","DE","EE","IE","EL","ES","FR","HR","IT","CY",
     "LV","LT","LU","MT","NL","AT","PT","SI","SK","FI") %T>% 
-  {stopifnot(length(.)==20, all(nchar(.)==2),
+  {stopifnot(length(.)==21, all(nchar(.)==2),
              all(. %in% eurodata::importLabels('geo')$geo))}
 
 large_EU_Members_geo_codes <-

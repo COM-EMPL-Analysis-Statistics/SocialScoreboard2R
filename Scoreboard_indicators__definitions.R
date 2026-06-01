@@ -1,7 +1,7 @@
 
 inside(SCOREBOARD_INDICATORS, indicator_number = "09500_ex-50") = 
 specification(
-name = "Adult participation in learning (during the last 12 months, excl. guided on the job training, % of the population aged 25-64, men)",
+name = "Adult participation in learning (during the last 12 months, % of the population aged 25-64, men)",
 chapter = "Education, skills and life long learning",
 group = "Equal opportunities",
 type = "B",
@@ -12,7 +12,7 @@ value = fromEurostatDataset("trng_aes_100",
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09510_ex-49") = 
 specification(
-name = "Adult participation in learning (during the last 12 months, excl. guided on the job training, % of the population aged 25-64, women)",
+name = "Adult participation in learning (during the last 12 months, % of the population aged 25-64, women)",
 chapter = "Education, skills and life long learning",
 group = "Equal opportunities",
 type = "B",
@@ -23,7 +23,7 @@ value = fromEurostatDataset("trng_aes_100",
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09520_ex-48") = 
 specification(
-name = "Adult participation in learning (during the last 12 months, excl. guided on the job training, % of the population aged 25-34)",
+name = "Adult participation in learning (during the last 12 months, % of the population aged 25-34)",
 chapter = "Education, skills and life long learning",
 group = "Equal opportunities",
 type = "B",
@@ -34,7 +34,7 @@ value = fromEurostatDataset("trng_aes_101",
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09530_ex-47") = 
 specification(
-name = "Adult participation in learning (during the last 12 months, excl. guided on the job training, % of the population aged 35-44)",
+name = "Adult participation in learning (during the last 12 months, % of the population aged 35-44)",
 chapter = "Education, skills and life long learning",
 group = "Equal opportunities",
 type = "B",
@@ -45,7 +45,7 @@ value = fromEurostatDataset("trng_aes_101",
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09540_ex-46") = 
 specification(
-name = "Adult participation in learning (during the last 12 months, excl. guided on the job training, % of the population aged 45-54)",
+name = "Adult participation in learning (during the last 12 months, % of the population aged 45-54)",
 chapter = "Education, skills and life long learning",
 group = "Equal opportunities",
 type = "B",
@@ -56,18 +56,18 @@ value = fromEurostatDataset("trng_aes_101",
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09550_ex-45") = 
 specification(
-name = "Adult participation in learning (during the last 12 months, excl. guided on the job training, % of the population aged 55-64)",
+name = "Adult participation in learning (during the last 12 months, % of the population aged 55-64)",
 chapter = "Education, skills and life long learning",
 group = "Equal opportunities",
 type = "B",
 high_is_good = TRUE,
-value = fromSpecialCalculation("Participation_in_education_and_training", 
-    with_filters(group="Y55-64"))
+value = fromEurostatDataset("trng_aes_101",
+    with_filters(age="Y55-64", sex="T", training="FE_NFE"))
 )
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09560_ex-44") = 
 specification(
-name = "Adult participation in learning (during the last 12 months, excl. guided on the job training, % of the population aged 25-64, educational attainment: less than primary, primary and lower secondary)",
+name = "Adult participation in learning (during the last 12 months, % of the population aged 25-64, educational attainment: less than primary, primary and lower secondary)",
 chapter = "Education, skills and life long learning",
 group = "Equal opportunities",
 type = "B",
@@ -78,7 +78,7 @@ value = fromEurostatDataset("trng_aes_102",
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09570_ex-43") = 
 specification(
-name = "Adult participation in learning (during the last 12 months, excl. guided on the job training, % of the population aged 25-64, educational attainment: upper secondary and post-secondary non-tertiary)",
+name = "Adult participation in learning (during the last 12 months, % of the population aged 25-64, educational attainment: upper secondary and post-secondary non-tertiary)",
 chapter = "Education, skills and life long learning",
 group = "Equal opportunities",
 type = "B",
@@ -89,7 +89,7 @@ value = fromEurostatDataset("trng_aes_102",
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09580_ex-42") = 
 specification(
-name = "Adult participation in learning (during the last 12 months, excl. guided on the job training, % of the population aged 25-64, educational attainment: tertiary)",
+name = "Adult participation in learning (during the last 12 months, % of the population aged 25-64, educational attainment: tertiary)",
 chapter = "Education, skills and life long learning",
 group = "Equal opportunities",
 type = "B",
@@ -100,7 +100,7 @@ value = fromEurostatDataset("trng_aes_102",
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "10000_ex0") = 
 specification(
-name = "Adult participation in learning (during the last 12 months, excl. guided on the job training, % of the population aged 25-64)",
+name = "Adult participation in learning (during the last 12 months, % of the population aged 25-64)",
 chapter = "Education, skills and life long learning",
 group = "Equal opportunities",
 type = "H",
