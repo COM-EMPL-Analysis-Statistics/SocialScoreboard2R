@@ -29,7 +29,7 @@ group = "Equal opportunities",
 type = "B",
 high_is_good = TRUE,
 value = fromEurostatDataset("trng_aes_101",
-    with_filters(age="Y25-34", sex="T", training="FE_NFE"))
+    with_filters(age="Y25-34", training="FE_NFE"))
 )
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09530_ex-47") = 
@@ -40,7 +40,7 @@ group = "Equal opportunities",
 type = "B",
 high_is_good = TRUE,
 value = fromEurostatDataset("trng_aes_101",
-    with_filters(age="Y35-44", sex="T", training="FE_NFE"))
+    with_filters(age="Y35-44", training="FE_NFE"))
 )
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09540_ex-46") = 
@@ -51,7 +51,7 @@ group = "Equal opportunities",
 type = "B",
 high_is_good = TRUE,
 value = fromEurostatDataset("trng_aes_101",
-    with_filters(age="Y45-54", sex="T", training="FE_NFE"))
+    with_filters(age="Y45-54", training="FE_NFE"))
 )
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09550_ex-45") = 
@@ -62,7 +62,7 @@ group = "Equal opportunities",
 type = "B",
 high_is_good = TRUE,
 value = fromEurostatDataset("trng_aes_101",
-    with_filters(age="Y55-64", sex="T", training="FE_NFE"))
+    with_filters(age="Y55-64", training="FE_NFE"))
 )
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09560_ex-44") = 
@@ -73,7 +73,7 @@ group = "Equal opportunities",
 type = "B",
 high_is_good = TRUE,
 value = fromEurostatDataset("trng_aes_102",
-    with_filters(isced11="ED0-2", age="Y25-64", sex="T", training="FE_NFE"))
+    with_filters(isced11="ED0-2", age="Y25-64", training="FE_NFE"))
 )
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09570_ex-43") = 
@@ -84,7 +84,7 @@ group = "Equal opportunities",
 type = "B",
 high_is_good = TRUE,
 value = fromEurostatDataset("trng_aes_102",
-    with_filters(isced11="ED3_4", age="Y25-64", sex="T", training="FE_NFE"))
+    with_filters(isced11="ED3_4", age="Y25-64", training="FE_NFE"))
 )
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "09580_ex-42") = 
@@ -95,7 +95,7 @@ group = "Equal opportunities",
 type = "B",
 high_is_good = TRUE,
 value = fromEurostatDataset("trng_aes_102",
-    with_filters(isced11="ED5-8", age="Y25-64", sex="T", training="FE_NFE"))
+    with_filters(isced11="ED5-8", age="Y25-64", training="FE_NFE"))
 )
        
 inside(SCOREBOARD_INDICATORS, indicator_number = "10000_ex0") = 
